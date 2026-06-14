@@ -1,5 +1,6 @@
 package cloudpage.controller;
 
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -14,6 +15,7 @@ import cloudpage.security.JwtAuthFilter;
 import cloudpage.security.JwtUtil;
 import cloudpage.service.TrashService;
 import cloudpage.service.UserService;
+import java.nio.file.FileAlreadyExistsException;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,6 +65,15 @@ class TrashControllerTest {
     mockMvc.perform(post("/api/files/trash/t1/restore")).andExpect(status().isOk());
 
     verify(trashService).restore("/root", "user-1", "t1");
+  }
+
+  @Test
+  void restore_whenTargetAlreadyExists_returns409() throws Exception {
+    doThrow(new FileAlreadyExistsException("Cannot restore: a file already exists at docs/doc.txt"))
+        .when(trashService)
+        .restore("/root", "user-1", "t1");
+
+    mockMvc.perform(post("/api/files/trash/t1/restore")).andExpect(status().isConflict());
   }
 
   @Test

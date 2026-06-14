@@ -1,5 +1,6 @@
 package cloudpage.exceptions;
 
+import java.nio.file.FileAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -41,5 +42,10 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
     return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(FileAlreadyExistsException.class)
+  public ResponseEntity<String> handleFileAlreadyExistsException(FileAlreadyExistsException ex) {
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
   }
 }
